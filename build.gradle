@@ -33,6 +33,7 @@ dependencies {
 	compile 'org.webjars:bootstrap:4.2.1'
 	compile 'rome:rome:1.0'
 	compile 'org.yaml:snakeyaml:1.21'
+	compile 'org.jsoup:jsoup:1.10.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

@@ -6,7 +6,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 
 @Service
-public class YamlParser<T> {
+public class YamlParserService<T> {
 
     public T parse(InputStream inputStream){
         return new Yaml().load(inputStream);
