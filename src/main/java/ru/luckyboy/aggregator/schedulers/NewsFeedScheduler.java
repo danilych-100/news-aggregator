@@ -43,29 +43,33 @@ public class NewsFeedScheduler {
         }
 
         for(NewsSource source : newsSources){
-            ParseRule parseRule = source.getParseRule();
-            INewsLoader newsLoader = NewsUtils.selectNewsLoaderBySourceType(parseRule.getSource());
-
-            try {
-                List<NewsItem> foundNewsItems = newsLoader.loadNewsFeedFromUrlByRules(source.getUrl(), parseRule);
-                List<NewsItem> needToSaveItems = newsItemsService.getAllNonExistedNews(foundNewsItems);
-                if(CollectionUtils.isEmpty(needToSaveItems)){
-                    continue;
-                }
-
-                needToSaveItems.forEach(newsItem -> newsItem.setNewsSource(source));
-                if(source.getNewsItems() == null){
-                    source.setNewsItems(needToSaveItems);
-                } else {
-                    source.getNewsItems().addAll(needToSaveItems);
-                }
-
-                newsSourceService.updateSource(source);
-            } catch (IOException | BadRuleException e) {
-                logger.error("Error scheduled add new NewsItems", e);
-            }
+            processNewsSource(source);
         }
 
         logger.debug("Finish task for add news items from sources");
+    }
+
+    private void processNewsSource(final NewsSource source){
+        ParseRule parseRule = source.getParseRule();
+        INewsLoader newsLoader = NewsUtils.selectNewsLoaderBySourceType(parseRule.getSource());
+
+        try {
+            List<NewsItem> foundNewsItems = newsLoader.loadNewsFeedFromUrlByRules(source.getUrl(), parseRule);
+            List<NewsItem> needToSaveItems = newsItemsService.getAllNonExistedNews(foundNewsItems);
+            if(CollectionUtils.isEmpty(needToSaveItems)){
+                return;
+            }
+
+            needToSaveItems.forEach(newsItem -> newsItem.setNewsSource(source));
+            if(source.getNewsItems() == null){
+                source.setNewsItems(needToSaveItems);
+            } else {
+                source.getNewsItems().addAll(needToSaveItems);
+            }
+
+            newsSourceService.updateSource(source);
+        } catch (IOException | BadRuleException e) {
+            logger.error("Error scheduled add new NewsItems", e);
+        }
     }
 }

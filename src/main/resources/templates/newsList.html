@@ -15,12 +15,37 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="/">Добавление источника новостей</a>
-    <a class="navbar-brand active_nav" href="/news-list">Список новостей</a>
+    <a class="navbar-brand active_nav" href="/newsList">Список новостей</a>
 </nav>
 
-<main class="container">
-    <h1>Добавьте Новости</h1>
-ываываыав
+<main class="container main_content">
+    <h1>Новости</h1>
+    <form action="#" th:action="@{/newsList}" th:object="${search}" method="post" >
+        <p><input type="text" th:field="*{title}"/></p>
+        <p><input type="submit" value="Поиск" /></p>
+    </form>
+    <table border="1" class="table table-fluid">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${newsItems}">
+            <td th:text="${item.id}" />
+            <td th:text="${item.title}" />
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${maxPages > 0}" class="pagination">
+        <div th:each="pageNumber : ${#numbers.sequence(1, maxPages)}" class="page_item">
+            <a th:href="@{/newsList(size=${size}, page=${pageNumber})}"
+               th:text=${pageNumber}
+               th:class="${pageNumber==currentPage} ? active_page_number"></a>
+        </div>
+    </div>
+
 </main>
 <!-- /.container -->
 

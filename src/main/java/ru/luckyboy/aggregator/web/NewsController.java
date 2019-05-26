@@ -10,15 +10,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.service.NewsService;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
+import ru.luckyboy.aggregator.web.dto.SearchDTO;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,10 +77,23 @@ public class NewsController {
                 .body(resource);
     }
 
-    @GetMapping("/news-list")
-    public String newsList(Model model) {
-        model.addAttribute("greeting", new NewsSourceDTO());
+    @GetMapping("/newsList")
+    public String newsList(Model model,
+                           @RequestParam(defaultValue="1", value="page", required=false) Integer page,
+                           @RequestParam(defaultValue="20", value="size", required=false) Integer size,
+                           @RequestParam(defaultValue="", value="search", required=false) String search) {
+        model.addAttribute("search", new SearchDTO(search));
+        model.addAttribute("newsItems", newsService.getNewsItems(page - 1, size, search));
+        model.addAttribute("currentPage", page);
+        float nrOfPages = (float) newsService.getNewsItemsCountBySearch(search) / size;
+        int maxPages = (int) Math.ceil(nrOfPages);
+        model.addAttribute("maxPages", maxPages);
 
         return "newsList";
+    }
+
+    @PostMapping(value = "/newsList")
+    public String searchNews(@ModelAttribute SearchDTO search) throws UnsupportedEncodingException {
+        return "redirect:/newsList?search=" + URLEncoder.encode(search.getTitle(), "UTF-8");
     }
 }

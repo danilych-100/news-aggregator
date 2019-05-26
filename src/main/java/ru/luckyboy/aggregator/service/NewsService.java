@@ -1,6 +1,7 @@
 package ru.luckyboy.aggregator.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.domain.ParseRule;
@@ -63,5 +64,19 @@ public class NewsService {
         ParseRule rule = parseRuleService.findById(ruleId);
         rule.setNewsSource(null);
         return yamlParserHelper.getYmlFromObject(rule);
+    }
+
+    public List<NewsItem> getNewsItems(final int page, final int size, final String search){
+        if(StringUtils.isEmpty(search)){
+            return newsItemsService.findAllPageable(page, size);
+        }
+        return newsItemsService.findAllPageableBySearch(page, size, search);
+    }
+
+    public long getNewsItemsCountBySearch(final String search){
+        if(StringUtils.isEmpty(search)){
+            return newsItemsService.countNewsItems();
+        }
+        return newsItemsService.countNewsItemsBySearch(search);
     }
 }

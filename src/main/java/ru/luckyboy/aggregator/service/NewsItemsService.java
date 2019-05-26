@@ -1,5 +1,6 @@
 package ru.luckyboy.aggregator.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.luckyboy.aggregator.domain.NewsItem;
@@ -23,6 +24,22 @@ public class NewsItemsService {
     @Transactional
     public void saveItems(List<NewsItem> newsItems){
         newsItemRepository.saveAll(getAllNonExistedNews(newsItems));
+    }
+
+    public long countNewsItems(){
+        return newsItemRepository.count();
+    }
+
+    public long countNewsItemsBySearch(final String search){
+        return newsItemRepository.countByTitleContainsAllIgnoreCase(search);
+    }
+
+    public List<NewsItem> findAllPageable(final int page, final int size){
+        return newsItemRepository.findAll(PageRequest.of(page, size)).getContent();
+    }
+
+    public List<NewsItem> findAllPageableBySearch(final int page, final int size, final String search){
+        return newsItemRepository.findByTitleContainsAllIgnoreCase(search, PageRequest.of(page, size)).getContent();
     }
 
     public List<NewsItem> getAllNonExistedNews(List<NewsItem> newsItems){
