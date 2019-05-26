@@ -4,7 +4,6 @@ import lombok.Data;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.time.ZonedDateTime;
 
 @Entity
 @Data

@@ -2,7 +2,6 @@ package ru.luckyboy.aggregator.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
@@ -10,22 +9,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.service.NewsService;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 import ru.luckyboy.aggregator.web.dto.SearchDTO;
 
 import javax.persistence.NonUniqueResultException;
-import java.io.*;
-import java.net.URLDecoder;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -38,6 +33,7 @@ public class NewsController {
     public NewsController(NewsService newsService){
         this.newsService = newsService;
     }
+
 
     @GetMapping("/")
     public String main(Model model) {

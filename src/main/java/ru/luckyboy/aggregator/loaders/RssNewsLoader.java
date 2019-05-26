@@ -9,10 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.ParseRule;
-import ru.luckyboy.aggregator.exceptions.BadRuleException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,28 +35,32 @@ public class RssNewsLoader implements INewsLoader{
 
         if(feed.getEntries() != null){
             for (Object o : feed.getEntries()){
-                SyndEntryImpl entry = (SyndEntryImpl) o;
-                NewsItem newsItem = new NewsItem();
-                newsItem.setTitle(entry.getTitle());
-                newsItem.setLink(entry.getLink());
-                newsItem.setDescription(entry.getDescription().getValue());
-                newsItem.setPublishedDate(entry.getPublishedDate().toString());
-                newsItem.setAuthor(entry.getAuthor());
-                List categories = entry.getCategories();
-                if(!CollectionUtils.isEmpty(categories)){
-                    SyndCategory syndCategory = (SyndCategory) categories.get(0);
-                    newsItem.setCategory(syndCategory.getName());
-                }
-                List enclosures = entry.getEnclosures();
-                if(!CollectionUtils.isEmpty(enclosures)){
-                    SyndEnclosure syndEnclosure = (SyndEnclosure) enclosures.get(0);
-                    newsItem.setImgSrc(syndEnclosure.getUrl());
-                }
-
+                NewsItem newsItem = createNewsItemFromEntry((SyndEntry) o);
                 newsItems.add(newsItem);
             }
         }
 
         return newsItems;
+    }
+
+    private NewsItem createNewsItemFromEntry(SyndEntry entry){
+        NewsItem newsItem = new NewsItem();
+        newsItem.setTitle(entry.getTitle());
+        newsItem.setLink(entry.getLink());
+        newsItem.setDescription(entry.getDescription().getValue());
+        newsItem.setPublishedDate(entry.getPublishedDate().toString());
+        newsItem.setAuthor(entry.getAuthor());
+        List categories = entry.getCategories();
+        if(!CollectionUtils.isEmpty(categories)){
+            SyndCategory syndCategory = (SyndCategory) categories.get(0);
+            newsItem.setCategory(syndCategory.getName());
+        }
+        List enclosures = entry.getEnclosures();
+        if(!CollectionUtils.isEmpty(enclosures)){
+            SyndEnclosure syndEnclosure = (SyndEnclosure) enclosures.get(0);
+            newsItem.setImgSrc(syndEnclosure.getUrl());
+        }
+
+        return newsItem;
     }
 }

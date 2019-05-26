@@ -5,7 +5,6 @@ import ru.luckyboy.aggregator.domain.ParseRule;
 import ru.luckyboy.aggregator.exceptions.BadRuleException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 public interface INewsLoader {

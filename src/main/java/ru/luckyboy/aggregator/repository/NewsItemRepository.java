@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.luckyboy.aggregator.domain.NewsItem;
 
-import java.util.List;
-
 public interface NewsItemRepository extends JpaRepository<NewsItem, Long> {
 
     NewsItem findByLink(String link);

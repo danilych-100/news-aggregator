@@ -5,9 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.luckyboy.aggregator.domain.ParseRule;
 import ru.luckyboy.aggregator.repository.ParseRuleRepository;
 
-import java.time.temporal.TemporalAmount;
-import java.util.Optional;
-
 @Service
 public class ParseRuleService {
 
@@ -15,11 +12,6 @@ public class ParseRuleService {
 
     public ParseRuleService(ParseRuleRepository parseRuleRepository) {
         this.parseRuleRepository = parseRuleRepository;
-    }
-
-    @Transactional
-    public void saveParseRule(ParseRule rule){
-        parseRuleRepository.save(rule);
     }
 
     public ParseRule findById(Long ruleId) {
