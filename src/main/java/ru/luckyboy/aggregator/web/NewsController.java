@@ -60,6 +60,13 @@ public class NewsController {
         return "redirect:/";
     }
 
+    @GetMapping("/removeNewsSource")
+    public String removeNewsSource(@Param(value="ruleId") Long id) {
+        newsService.removeNewsSource(id);
+
+        return "redirect:/";
+    }
+
     @GetMapping("/downloadRule")
     @ResponseBody
     public ResponseEntity downloadRule(@Param(value="ruleId") Long ruleId) {

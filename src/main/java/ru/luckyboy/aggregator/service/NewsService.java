@@ -66,6 +66,10 @@ public class NewsService {
         return yamlParserHelper.getYmlFromObject(rule);
     }
 
+    public void removeNewsSource(Long id) {
+        newsSourceService.removeById(id);
+    }
+
     public List<NewsItem> getNewsItems(final int page, final int size, final String search){
         if(StringUtils.isEmpty(search)){
             return newsItemsService.findAllPageable(page, size);

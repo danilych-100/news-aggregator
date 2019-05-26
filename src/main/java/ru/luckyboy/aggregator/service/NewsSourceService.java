@@ -32,6 +32,11 @@ public class NewsSourceService {
         newsSourceRepository.save(newsSource);
     }
 
+    @Transactional
+    public void removeById(Long id) {
+        newsSourceRepository.deleteById(id);
+    }
+
     public List<NewsSource> findAll(){
         return newsSourceRepository.findAll();
     }

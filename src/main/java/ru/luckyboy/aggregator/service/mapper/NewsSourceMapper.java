@@ -9,6 +9,7 @@ public class NewsSourceMapper {
 
     public static NewsSourceDTO toDTO(NewsSource newsSource){
         NewsSourceDTO newsSourceDTO = new NewsSourceDTO();
+        newsSourceDTO.setId(newsSource.getId());
         newsSourceDTO.setName(newsSource.getName());
         newsSourceDTO.setUrl(newsSource.getUrl());
         newsSourceDTO.setRuleId(newsSource.getParseRule().getId());

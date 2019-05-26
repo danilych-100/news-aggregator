@@ -6,6 +6,10 @@
     color: coral !important;
 }
 
+.remove-link{
+    color: orangered;
+}
+
 .search-form{
     display: inline-block;
 }

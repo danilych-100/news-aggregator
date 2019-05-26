@@ -26,12 +26,16 @@
             <th>Название</th>
             <th>URL</th>
             <th>Скачать правила парсинга</th>
+            <th>Удалить источник</th>
         </tr>
         <tr th:each ="source : ${addedNewsSources}">
             <td th:utext="${source.name}"></td>
             <td th:utext="${source.url}"></td>
             <td>
                 <a th:href="@{|/downloadRule?ruleId=${source.ruleId}|}">Скачать</a>
+            </td>
+            <td>
+                <a th:href="@{|/removeNewsSource?id=${source.id}|}" class="remove-link">Удалить</a>
             </td>
         </tr>
     </table>
