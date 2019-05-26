@@ -29,10 +29,7 @@ public class NewsItemsService {
         List<NewsItem> needToSaveItems = new ArrayList<>();
         for(NewsItem newsItem : newsItems){
             NewsItem savedItem = findByLink(newsItem.getLink());
-            if(savedItem != null) {
-                savedItem.setNewsSource(newsItem.getNewsSource());
-                needToSaveItems.add(savedItem);
-            }  else {
+            if(savedItem == null) {
                 needToSaveItems.add(newsItem);
             }
         }

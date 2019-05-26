@@ -18,12 +18,17 @@ public class NewsSourceService {
     }
 
     @Transactional
-    public void saveSource(NewsSource newsSource){
+    public void createSource(NewsSource newsSource){
         Optional<NewsSource> existedNewsSource = newsSourceRepository.findByUrl(newsSource.getUrl());
         if(existedNewsSource.isPresent()){
             newsSource = existedNewsSource.get();
             newsSource.setParseRule(newsSource.getParseRule());
         }
+        newsSourceRepository.save(newsSource);
+    }
+
+    @Transactional
+    public void updateSource(NewsSource newsSource){
         newsSourceRepository.save(newsSource);
     }
 

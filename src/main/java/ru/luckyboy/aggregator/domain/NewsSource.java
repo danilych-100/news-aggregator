@@ -28,6 +28,6 @@ public class NewsSource {
     @JoinColumn(name = "parse_rule_id")
     private ParseRule parseRule;
 
-    @OneToMany(mappedBy = "newsSource", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "newsSource", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<NewsItem> newsItems;
 }

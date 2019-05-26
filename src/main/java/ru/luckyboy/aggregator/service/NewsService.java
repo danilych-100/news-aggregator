@@ -4,14 +4,11 @@ import org.springframework.stereotype.Service;
 import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.domain.ParseRule;
-import ru.luckyboy.aggregator.domain.enumeration.SourceType;
 import ru.luckyboy.aggregator.exceptions.BadRuleException;
-import ru.luckyboy.aggregator.loaders.HtmlNewsLoader;
 import ru.luckyboy.aggregator.loaders.INewsLoader;
-import ru.luckyboy.aggregator.loaders.RssNewsLoader;
-import ru.luckyboy.aggregator.repository.ParseRuleRepository;
 import ru.luckyboy.aggregator.service.helpers.YamlParserHelper;
 import ru.luckyboy.aggregator.service.mapper.NewsSourceMapper;
+import ru.luckyboy.aggregator.utils.NewsUtils;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 
 import java.io.IOException;
@@ -49,25 +46,13 @@ public class NewsService {
         newsSource.setParseRule(parseRule);
         parseRule.setNewsSource(newsSource);
 
-        INewsLoader newsLoader = selectNewsLoaderBySourceType(parseRule.getSource());
+        INewsLoader newsLoader = NewsUtils.selectNewsLoaderBySourceType(parseRule.getSource());
 
         List<NewsItem> foundNewsItems = newsLoader.loadNewsFeedFromUrlByRules(newsSource.getUrl(), parseRule);
-        List<NewsItem> needToSaveItems = newsItemsService.getAllNonExistedNews(foundNewsItems);
-        needToSaveItems.forEach(newsItem -> newsItem.setNewsSource(newsSource));
-        newsSource.setNewsItems(needToSaveItems);
+        foundNewsItems.forEach(newsItem -> newsItem.setNewsSource(newsSource));
+        newsSource.setNewsItems(foundNewsItems);
 
-        newsSourceService.saveSource(newsSource);
-    }
-
-    private INewsLoader selectNewsLoaderBySourceType(final SourceType sourceType){
-        switch (sourceType){
-            case RSS:
-                return new RssNewsLoader();
-            case HTML:
-                return new HtmlNewsLoader();
-                default:
-                    return new HtmlNewsLoader();
-        }
+        newsSourceService.createSource(newsSource);
     }
 
     public List<NewsSourceDTO> getExistedNewsSources() {
