@@ -23,6 +23,11 @@ public class ParseRule {
     @Column(length = 1000, name = "feed_tag")
     private String feedTag;
 
+    @Column(length = 1000, name = "item_class")
+    private String itemClass;
+    @Column(length = 1000, name = "item_tag")
+    private String itemTag;
+
     @Column(length = 1000, name = "title_class")
     private String titleClass;
     @Column(length = 1000, name = "title_tag")
@@ -51,6 +56,8 @@ public class ParseRule {
 
     @Column(length = 1000, name = "uri_class")
     private String uriClass;
+    @Column(length = 1000, name = "uri_tag")
+    private String uriTag;
 
     @OneToOne(mappedBy="parseRule", cascade = CascadeType.ALL)
     private NewsSource newsSource;

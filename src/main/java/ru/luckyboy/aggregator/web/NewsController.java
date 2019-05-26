@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.service.NewsService;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 
@@ -39,11 +40,12 @@ public class NewsController {
         try {
             newsService.loadNewsSource(newsSource, file.getInputStream());
         } catch (NonUniqueResultException e){
-            logger.debug("This source url been already added", e);
-        } catch (Exception e){
-            logger.debug("There was problem with adding new source", e);
+            logger.error("This source url been already added", e);
+        } catch (IOException e){
+            logger.error("There is a problem with loading news feed (maybe internet is down)", e);
+        } catch (BadRuleException e) {
+            logger.error("There is error in rule", e);
         }
-
 
         return "redirect:/";
     }

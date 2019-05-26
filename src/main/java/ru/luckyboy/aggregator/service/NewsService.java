@@ -5,12 +5,14 @@ import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.domain.ParseRule;
 import ru.luckyboy.aggregator.domain.enumeration.SourceType;
+import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.loaders.HtmlNewsLoader;
 import ru.luckyboy.aggregator.loaders.INewsLoader;
 import ru.luckyboy.aggregator.loaders.RssNewsLoader;
 import ru.luckyboy.aggregator.service.helpers.YamlParserHelper;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class NewsService {
     }
 
 
-    public void loadNewsSource(final NewsSourceDTO newsSourceDTO, final InputStream fileInputStream) throws Exception {
+    public void loadNewsSource(final NewsSourceDTO newsSourceDTO, final InputStream fileInputStream) throws IOException, BadRuleException {
         ParseRule parseRule = yamlParserHelper.parse(fileInputStream, ParseRule.class);
 
         NewsSource newsSource = new NewsSource();

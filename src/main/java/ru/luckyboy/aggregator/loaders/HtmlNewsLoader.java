@@ -1,52 +1,114 @@
 package ru.luckyboy.aggregator.loaders;
 
-import com.sun.syndication.feed.synd.SyndCategory;
-import com.sun.syndication.feed.synd.SyndEnclosure;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
-import org.springframework.util.CollectionUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.util.StringUtils;
 import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.ParseRule;
+import ru.luckyboy.aggregator.exceptions.BadRuleException;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public class HtmlNewsLoader implements INewsLoader{
 
+    private final String IMG_TAG_NAME = "img";
+    private final String IMG_LINK_ATTR = "src";
+    private final String LINK_HREF_ATTR = "href";
+
     @Override
-    public List<NewsItem> loadNewsFeedFromUrlByRules(final String url, final ParseRule rule) throws Exception {
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(new URL(url)));
+    public List<NewsItem> loadNewsFeedFromUrlByRules(final String url, final ParseRule rule) throws IOException, BadRuleException {
+        final ArrayList<NewsItem> newsItems = new ArrayList<>();
 
-        List<NewsItem> newsItems = new ArrayList<>();
-        if(feed.getEntries() != null){
-            for (Object o : feed.getEntries()){
-                SyndEntryImpl entry = (SyndEntryImpl) o;
-                NewsItem newsItem = new NewsItem();
-                newsItem.setTitle(entry.getTitle());
-                newsItem.setLink(entry.getLink());
-                newsItem.setDescription(entry.getDescription().getValue());
-                newsItem.setPublishedDate(entry.getPublishedDate().toString());
-                newsItem.setAuthor(entry.getAuthor());
-                List categories = entry.getCategories();
-                if(!CollectionUtils.isEmpty(categories)){
-                    SyndCategory syndCategory = (SyndCategory) categories.get(0);
-                    newsItem.setCategory(syndCategory.getName());
-                }
-                List enclosures = entry.getEnclosures();
-                if(!CollectionUtils.isEmpty(enclosures)){
-                    SyndEnclosure syndEnclosure = (SyndEnclosure) enclosures.get(0);
-                    newsItem.setImgSrc(syndEnclosure.getUrl());
-                }
+        Connection.Response connection = null;
+        connection = Jsoup.connect(url).execute();
+        Document document = connection.parse();
+        if (!StringUtils.isEmpty(rule.getFeedClass())) {
+            document.body().getElementsByClass(rule.getFeedClass()).forEach(getFeedConsumer(rule, newsItems));
+        } else if(!StringUtils.isEmpty(rule.getFeedTag())){
+            document.body().getElementsByTag(rule.getFeedTag()).forEach(getFeedConsumer(rule, newsItems));
+        } else {
+            if(!StringUtils.isEmpty(rule.getItemClass())) {
+                document.body().getElementsByClass(rule.getItemClass()).forEach(getElementConsumer(rule, newsItems));
+            } else if(!StringUtils.isEmpty(rule.getItemTag())){
+                document.body().getElementsByTag(rule.getItemTag()).forEach(getElementConsumer(rule, newsItems));
+            } else {
+                throw new BadRuleException("None of one required fields 'feedClass' and 'itemClass' exist");
+            }
+        }
+        return newsItems;
+    }
 
-                newsItems.add(newsItem);
+    private Consumer<Element> getFeedConsumer(ParseRule rule, ArrayList<NewsItem> newsItems) {
+        return value -> {
+            if (!StringUtils.isEmpty(rule.getItemClass())) {
+                value.getElementsByClass(rule.getItemClass()).forEach(getElementConsumer(rule, newsItems));
+            } else if (!StringUtils.isEmpty(rule.getItemTag())) {
+                value.getElementsByTag(rule.getItemTag()).forEach(getElementConsumer(rule, newsItems));
+            }
+        };
+    }
+
+    private Consumer<Element> getElementConsumer(ParseRule rule, ArrayList<NewsItem> newsItems) {
+        return e -> {
+            String title = getElementTextByClassAndTag(e, rule.getTitleClass(), rule.getTitleTag(), null);
+            String description = getElementTextByClassAndTag(e, rule.getDescriptionClass(), rule.getDescriptionTag(), title);
+            if (StringUtils.isEmpty(title))
+                return;
+            if(description.isEmpty()){
+                description = title;
+            }
+            NewsItem newsItem = new NewsItem();
+            newsItem.setTitle(title);
+            newsItem.setDescription(description);
+            newsItem.setCategory(getElementTextByClassAndTag(e, rule.getCategoryClass(), rule.getCategoryTag(), "Без категории"));
+            newsItem.setAuthor(getElementTextByClassAndTag(e, rule.getAuthorClass(), null, "Неизвестен"));
+            newsItem.setPublishedDate(getElementTextByClassAndTag(e, rule.getPublishedDateClass(), rule.getPublishedDateTag(), "Неизвестно"));
+            newsItem.setImgSrc(getElementAttrByClassAndTag(e, rule.getImgClass(), IMG_TAG_NAME, IMG_LINK_ATTR));
+
+            String linkAttr = getElementAttrByClassAndTag(e, rule.getUriClass(), rule.getUriTag(), LINK_HREF_ATTR);
+            if(StringUtils.isEmpty(linkAttr)){
+                linkAttr = getElementTextByClassAndTag(e, rule.getUriClass(), rule.getUriTag(), null);
+            }
+            newsItem.setLink(linkAttr);
+
+            newsItems.add(newsItem);
+        };
+    }
+
+    private String getElementTextByClassAndTag(final Element e, final String className, final String tagName, final String nonExistedText){
+        Elements elements = getElementsByClassAndTag(e, className, tagName);
+
+        if(elements == null){
+            return nonExistedText;
+        }
+        return elements.text();
+    }
+
+    private String getElementAttrByClassAndTag(final Element e, final String className, final String tagName, final String attrName){
+        Elements elements = getElementsByClassAndTag(e, className, tagName);
+
+        if(elements == null){
+            return null;
+        }
+        return elements.attr(attrName);
+    }
+
+    private Elements getElementsByClassAndTag(final Element e, final String className, final String tagName){
+        Elements elements = null;
+        if (!StringUtils.isEmpty(className)) {
+            elements = e.getElementsByClass(className);
+            if (!StringUtils.isEmpty(tagName)) {
+                elements = elements.tagName(tagName);
             }
         }
 
-        return newsItems;
+        return elements;
     }
 }

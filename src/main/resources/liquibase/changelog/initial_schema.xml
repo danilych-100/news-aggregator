@@ -20,6 +20,8 @@
             </column>
             <column name="feed_class" type="varchar(1000)"/>
             <column name="feed_tag" type="varchar(1000)"/>
+            <column name="item_class" type="varchar(1000)"/>
+            <column name="item_tag" type="varchar(1000)"/>
             <column name="title_class" type="varchar(1000)"/>
             <column name="title_tag" type="varchar(1000)"/>
             <column name="description_class" type="varchar(1000)"/>
@@ -31,6 +33,7 @@
             <column name="img_class" type="varchar(1000)"/>
             <column name="author_class" type="varchar(1000)"/>
             <column name="uri_class" type="varchar(1000)"/>
+            <column name="uri_tag" type="varchar(1000)"/>
         </createTable>
     </changeSet>
 

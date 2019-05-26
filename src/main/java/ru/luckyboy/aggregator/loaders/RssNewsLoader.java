@@ -4,9 +4,12 @@ import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import ru.luckyboy.aggregator.domain.NewsItem;
 import ru.luckyboy.aggregator.domain.ParseRule;
+import ru.luckyboy.aggregator.exceptions.BadRuleException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,12 +20,21 @@ import java.util.List;
 
 public class RssNewsLoader implements INewsLoader{
 
-    @Override
-    public List<NewsItem> loadNewsFeedFromUrlByRules(final String url, final ParseRule rule) throws Exception {
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(new URL(url)));
+    private final Logger logger = LoggerFactory.getLogger(RssNewsLoader.class);
 
+    @Override
+    public List<NewsItem> loadNewsFeedFromUrlByRules(final String url, final ParseRule rule) throws IOException {
         List<NewsItem> newsItems = new ArrayList<>();
+
+        SyndFeedInput input = new SyndFeedInput();
+        SyndFeed feed = null;
+        try {
+            feed = input.build(new XmlReader(new URL(url)));
+        } catch (FeedException e) {
+            logger.error("Bad rss income", e);
+            return newsItems;
+        }
+
         if(feed.getEntries() != null){
             for (Object o : feed.getEntries()){
                 SyndEntryImpl entry = (SyndEntryImpl) o;
