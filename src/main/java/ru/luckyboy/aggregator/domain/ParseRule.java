@@ -1,7 +1,7 @@
 package ru.luckyboy.aggregator.domain;
 
 import lombok.Data;
-import ru.luckyboy.aggregator.domain.enumeration.ParseSource;
+import ru.luckyboy.aggregator.domain.enumeration.SourceType;
 
 import javax.persistence.*;
 
@@ -16,7 +16,7 @@ public class ParseRule {
 
     @Column(length = 100, name = "source", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ParseSource source;
+    private SourceType source;
 
     @Column(length = 1000, name = "feed_class")
     private String feedClass;
@@ -52,6 +52,6 @@ public class ParseRule {
     @Column(length = 1000, name = "uri_class")
     private String uriClass;
 
-    @OneToOne(mappedBy="parseRule")
+    @OneToOne(mappedBy="parseRule", cascade = CascadeType.ALL)
     private NewsSource newsSource;
 }

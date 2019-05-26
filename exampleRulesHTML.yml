@@ -1,0 +1,12 @@
+source: HTML
+feedTag: div
+feedClass: cols
+titleTag: a
+titleClass: newsitem__title
+descriptionTag: div
+descriptionClass: newsitem__text
+publishedDateTag: span
+publishedDateClass: js-ago
+categoryClass: hdr__text
+imgClass: newsitem__photo
+uriClass: link-holder

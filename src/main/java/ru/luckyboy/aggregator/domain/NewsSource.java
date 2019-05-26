@@ -24,10 +24,10 @@ public class NewsSource {
     @Size(min = 1, message = "Name must be at least 1 character")
     private String name;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "parse_rule_id")
     private ParseRule parseRule;
 
-    @OneToMany(mappedBy = "newsSource")
+    @OneToMany(mappedBy = "newsSource", cascade = CascadeType.ALL)
     private List<NewsItem> newsItems;
 }

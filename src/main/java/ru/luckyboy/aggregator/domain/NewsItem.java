@@ -38,7 +38,7 @@ public class NewsItem {
     @Column(length = 1000)
     private String link;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "news_source_id")
     private NewsSource newsSource;
 

@@ -1,6 +1,6 @@
 package ru.luckyboy.aggregator.domain.enumeration;
 
-public enum ParseSource {
+public enum SourceType {
 
     RSS, HTML
 }
