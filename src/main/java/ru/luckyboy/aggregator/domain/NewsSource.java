@@ -14,7 +14,7 @@ public class NewsSource {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    private Integer id;
+    private Long id;
 
     @Size(min = 1, message = "Invalid URL")
     @URL(message = "Invalid URL")

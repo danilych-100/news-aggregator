@@ -7,7 +7,7 @@ import ru.luckyboy.aggregator.domain.NewsSource;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 
-public interface NewsSourceRepository extends JpaRepository<NewsSource, Integer> {
+public interface NewsSourceRepository extends JpaRepository<NewsSource, Long> {
 
     Optional<NewsSource> findByUrl(String url);
 }

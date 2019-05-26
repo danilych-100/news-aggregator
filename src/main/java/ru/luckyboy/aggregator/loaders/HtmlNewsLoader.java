@@ -24,6 +24,8 @@ public class HtmlNewsLoader implements INewsLoader{
 
     @Override
     public List<NewsItem> loadNewsFeedFromUrlByRules(final String url, final ParseRule rule) throws IOException, BadRuleException {
+        checkParseRule(rule);
+
         final ArrayList<NewsItem> newsItems = new ArrayList<>();
 
         Connection.Response connection = null;
@@ -38,11 +40,20 @@ public class HtmlNewsLoader implements INewsLoader{
                 document.body().getElementsByClass(rule.getItemClass()).forEach(getElementConsumer(rule, newsItems));
             } else if(!StringUtils.isEmpty(rule.getItemTag())){
                 document.body().getElementsByTag(rule.getItemTag()).forEach(getElementConsumer(rule, newsItems));
-            } else {
-                throw new BadRuleException("None of one required fields 'feedClass' and 'itemClass' exist");
             }
         }
         return newsItems;
+    }
+
+    private void checkParseRule(final ParseRule rule) throws BadRuleException {
+        String formatForMessage = "Required field '%s' doesn't exist";
+        if(StringUtils.isEmpty(rule.getItemClass())){
+            throw new BadRuleException(String.format(formatForMessage, "itemClass"));
+        }
+        if(StringUtils.isEmpty(rule.getTitleClass())){
+            throw new BadRuleException(String.format(formatForMessage, "titleClass"));
+        }
+
     }
 
     private Consumer<Element> getFeedConsumer(ParseRule rule, ArrayList<NewsItem> newsItems) {

@@ -17,11 +17,4 @@ public class NewsFeedScheduler {
     public void addNewsItemsTask(){
         logger.debug("Start task for add news items from sources");
     }
-
-
-    @ConditionalOnProperty(value = "clearOldNewsItems.enabled", matchIfMissing = true, havingValue = "true")
-    @Scheduled(fixedDelayString = "${clearOldNewsItems.fixedDelay}")
-    public void clearOldNewsItemsTask(){
-        logger.debug("Start task for clear old news items from DB");
-    }
 }

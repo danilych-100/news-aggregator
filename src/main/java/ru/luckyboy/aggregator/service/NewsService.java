@@ -9,12 +9,15 @@ import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.loaders.HtmlNewsLoader;
 import ru.luckyboy.aggregator.loaders.INewsLoader;
 import ru.luckyboy.aggregator.loaders.RssNewsLoader;
+import ru.luckyboy.aggregator.repository.ParseRuleRepository;
 import ru.luckyboy.aggregator.service.helpers.YamlParserHelper;
+import ru.luckyboy.aggregator.service.mapper.NewsSourceMapper;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NewsService {
@@ -30,8 +33,8 @@ public class NewsService {
                        ParseRuleService parseRuleService,
                        NewsItemsService newsItemsService){
         this.newsSourceService = newsSourceService;
-        this.parseRuleService = parseRuleService;
         this.newsItemsService = newsItemsService;
+        this.parseRuleService = parseRuleService;
 
         this.yamlParserHelper = new YamlParserHelper<>();
     }
@@ -65,5 +68,15 @@ public class NewsService {
                 default:
                     return new HtmlNewsLoader();
         }
+    }
+
+    public List<NewsSourceDTO> getExistedNewsSources() {
+        return newsSourceService.findAll().stream().map(NewsSourceMapper::toDTO).collect(Collectors.toList());
+    }
+
+    public String downloadRule(Long ruleId) {
+        ParseRule rule = parseRuleService.findById(ruleId);
+        rule.setNewsSource(null);
+        return yamlParserHelper.getYmlFromObject(rule);
     }
 }

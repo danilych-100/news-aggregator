@@ -6,4 +6,5 @@ import lombok.Data;
 public class NewsSourceDTO {
     private String url;
     private String name;
+    private Long ruleId;
 }

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.repository.NewsSourceRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,5 +25,9 @@ public class NewsSourceService {
             newsSource.setParseRule(newsSource.getParseRule());
         }
         newsSourceRepository.save(newsSource);
+    }
+
+    public List<NewsSource> findAll(){
+        return newsSourceRepository.findAll();
     }
 }

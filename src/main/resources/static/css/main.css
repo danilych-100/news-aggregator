@@ -1,0 +1,11 @@
+.main_content {
+    margin-top: 100px;
+}
+
+.active_nav{
+    color: coral !important;
+}
+
+.navbar-brand:hover {
+    background: dimgrey;
+}

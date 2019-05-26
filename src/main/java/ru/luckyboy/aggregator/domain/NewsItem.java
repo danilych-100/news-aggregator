@@ -13,7 +13,7 @@ public class NewsItem {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    private Integer id;
+    private Long id;
 
     @Column(length = 1000)
     private String title;

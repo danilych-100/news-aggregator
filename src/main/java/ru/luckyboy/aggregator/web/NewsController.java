@@ -2,19 +2,25 @@ package ru.luckyboy.aggregator.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.luckyboy.aggregator.domain.NewsSource;
 import ru.luckyboy.aggregator.exceptions.BadRuleException;
 import ru.luckyboy.aggregator.service.NewsService;
 import ru.luckyboy.aggregator.web.dto.NewsSourceDTO;
 
 import javax.persistence.NonUniqueResultException;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class NewsController {
@@ -29,7 +35,9 @@ public class NewsController {
 
     @GetMapping("/")
     public String main(Model model) {
+        List<NewsSourceDTO> newsSources = newsService.getExistedNewsSources();
         model.addAttribute("newsSource", new NewsSourceDTO());
+        model.addAttribute("addedNewsSources", newsSources);
 
         return "addNewsSource";
     }
@@ -48,6 +56,19 @@ public class NewsController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/downloadRule")
+    @ResponseBody
+    public ResponseEntity downloadRule(@Param(value="ruleId") Long ruleId) {
+        byte[] fileContent = newsService.downloadRule(ruleId).getBytes();
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(fileContent));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=rule.yml")
+                .contentType(MediaType.TEXT_PLAIN)
+                .contentLength(fileContent.length)
+                .body(resource);
     }
 
     @GetMapping("/news-list")
