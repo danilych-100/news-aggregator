@@ -20,27 +20,41 @@
 
 <main class="container main_content">
     <h1>Новости</h1>
-    <form action="#" th:action="@{/newsList}" th:object="${search}" method="post" >
+    <form action="#" th:action="@{/newsList}" th:object="${search}" method="post" class="search-form">
         <p><input type="text" th:field="*{title}"/></p>
-        <p><input type="submit" value="Поиск" /></p>
+        <p><input type="submit" value="Поиск" />
+        </p>
     </form>
+
+    <a th:href="@{/newsList}">Очистить форму</a>
+
     <table border="1" class="table table-fluid">
         <thead>
         <tr>
-            <th>Id</th>
-            <th>Title</th>
+            <th>Источник</th>
+            <th>Категория</th>
+            <th>Дата публикации</th>
+            <th>Новость</th>
+            <th>Автор</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${newsItems}">
-            <td th:text="${item.id}" />
-            <td th:text="${item.title}" />
+            <td th:text="${item.getNewsSource().name}" />
+            <td th:text="${item.category}" />
+            <td th:text="${item.publishedDate}" />
+            <td>
+                <h6 th:text="${item.title}"></h6>
+                <img th:if="${item.imgSrc != null && !item.imgSrc.isEmpty()}" th:src="${item.imgSrc}" width="200"/>
+                <p th:if="${item.description != item.title}" th:text="${item.description}"></p>
+            </td>
+            <td th:text="${item.author}" />
         </tr>
         </tbody>
     </table>
     <div th:if="${maxPages > 0}" class="pagination">
         <div th:each="pageNumber : ${#numbers.sequence(1, maxPages)}" class="page_item">
-            <a th:href="@{/newsList(size=${size}, page=${pageNumber})}"
+            <a th:href="@{/newsList(size=${size}, page=${pageNumber}, search = ${search.title})}"
                th:text=${pageNumber}
                th:class="${pageNumber==currentPage} ? active_page_number"></a>
         </div>

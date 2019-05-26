@@ -69,12 +69,9 @@ public class HtmlNewsLoader implements INewsLoader{
     private Consumer<Element> getElementConsumer(ParseRule rule, ArrayList<NewsItem> newsItems) {
         return e -> {
             String title = getElementTextByClassAndTag(e, rule.getTitleClass(), rule.getTitleTag(), null);
-            String description = getElementTextByClassAndTag(e, rule.getDescriptionClass(), rule.getDescriptionTag(), title);
+            String description = getElementTextByClassAndTag(e, rule.getDescriptionClass(), rule.getDescriptionTag(), null);
             if (StringUtils.isEmpty(title))
                 return;
-            if(description.isEmpty()){
-                description = title;
-            }
             NewsItem newsItem = new NewsItem();
             newsItem.setTitle(title);
             newsItem.setDescription(description);
@@ -96,7 +93,7 @@ public class HtmlNewsLoader implements INewsLoader{
     private String getElementTextByClassAndTag(final Element e, final String className, final String tagName, final String nonExistedText){
         Elements elements = getElementsByClassAndTag(e, className, tagName);
 
-        if(elements == null){
+        if(elements == null || StringUtils.isEmpty(elements.text())){
             return nonExistedText;
         }
         return elements.text();

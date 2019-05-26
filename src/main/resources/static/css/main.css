@@ -6,6 +6,10 @@
     color: coral !important;
 }
 
+.search-form{
+    display: inline-block;
+}
+
 .navbar-brand:hover {
     background: dimgrey;
 }
