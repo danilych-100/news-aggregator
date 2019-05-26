@@ -47,6 +47,11 @@
                 <h6 th:text="${item.title}"></h6>
                 <img th:if="${item.imgSrc != null && !item.imgSrc.isEmpty()}" th:src="${item.imgSrc}" width="200"/>
                 <p th:if="${item.description != item.title}" th:text="${item.description}"></p>
+
+                <a th:href="${!item.link.startsWith('/') ? item.link : item.getNewsSource().url + item.link}"
+                   target="_blank">
+                    Подробнее
+                </a>
             </td>
             <td th:text="${item.author}" />
         </tr>
